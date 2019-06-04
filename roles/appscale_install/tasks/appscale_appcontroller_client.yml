@@ -1,0 +1,16 @@
+---
+
+- name: appscale -- appcontroller client update
+  pip:
+    name: "file://{{ appscale_home_runtime }}/AppControllerClient"
+    extra_args: --upgrade --no-deps
+  become: yes
+  become_user: root
+  tags: appscale_acc
+
+- name: appscale -- appcontroller client
+  pip:
+    name: "file://{{ appscale_home_runtime }}/AppControllerClient"
+  become: yes
+  become_user: root
+  tags: appscale_acc

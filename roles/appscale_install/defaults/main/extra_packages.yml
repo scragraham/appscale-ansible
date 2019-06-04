@@ -1,0 +1,51 @@
+---
+
+#
+# Variables defined here are used in tasks/main.yml and tasks/java.yml
+#
+
+# Location to store tar.gz files and cache them.
+package_cache: /var/cache/appscale
+appscale_external_jar_dest: "/usr/share/appscale/ext"
+
+#
+# Java jars that are used in several variables below.
+# If version changes be sure to change the md5sum in custom_files
+#
+appscale_map_reduce: "appscale-mapreduce-0.8.5.jar"
+appscale_pipeline: "appscale-pipeline-0.2.13.jar"
+appscale_gcs_client: "appscale-gcs-client-0.6.jar"
+appscale_go_runtime: "appscale-go-runtime-1.9.48.zip"
+appscale_go_runtime_dir: "/opt/go_appengine"
+
+zookeeper_gem: "zookeeper-1.4.11.gem"
+
+# These two variables are associated with each other
+cassandra_full_version: "apache-cassandra-3.11.2-w-12942-bin.tar.gz"
+cassandra_version: "apache-cassandra-3.11.2"
+
+solr_package: "solr-4.10.2.tgz"
+solr_ver: "4.10.2"
+
+appengine_java_sdk: appengine-java-sdk-1.8.4.zip
+appengine_repackaged_eclipse: repackaged-appengine-eclipse-jdt-ecj.jar
+#
+# Wonder if these should be defined in their own .yml files (along with other variables)
+# then reference those variables (and checksums) in this list
+#
+custom_files:
+  - { filename: "{{ solr_package }}", checksum: 'md5:a24f73f70e3fcf6aa8fda67444981f78' }
+  - { filename: "{{ appengine_java_sdk }}", checksum: 'md5:f5750b0c836870a3089096fd537a1272'}
+  - { filename: "{{ appengine_repackaged_eclipse }}", checksum: 'md5:e85db8329dccbd18b8174a3b99513393'}
+  - { filename: "{{ zookeeper_gem }}", checksum: 'md5:2117f0814722715a3c765211842337eb'}
+  - { filename: "{{ cassandra_full_version }}", checksum: 'md5:25a9039dba8fe7ffe5e5e560e65c1f6f'}
+  - { filename: "{{ appscale_map_reduce }}", checksum: 'md5:93f5101fa6ec761b33f4bf2ac8449447'}
+  - { filename: "{{ appscale_pipeline }}", checksum: 'md5:a6e4555c604a05897a48260429ce50c6'}
+  - { filename: "{{ appscale_gcs_client }}", checksum: 'md5:a03671de058acc7ea41144976868765c'}
+  - { filename: "{{ appscale_go_runtime }}", checksum: 'md5:3af8c4f6b3a147f99590862d2815025b'}
+
+# Used by copy module to copy files into final destination. tasks/java.yml
+appscale_external_jars:
+  - "{{ appscale_map_reduce }}"
+  - "{{ appscale_pipeline }}"
+  - "{{ appscale_gcs_client }}"

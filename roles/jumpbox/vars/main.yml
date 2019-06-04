@@ -1,0 +1,12 @@
+---
+
+directories:
+  - "{{ base_dir }}/deployments"
+  - "{{ base_dir }}/repos"
+  - "{{ base_dir }}/venvs"
+
+packages:
+  - git
+  - python
+  - python-pip
+  - python-virtualenv

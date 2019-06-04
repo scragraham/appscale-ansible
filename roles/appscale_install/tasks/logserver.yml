@@ -1,0 +1,16 @@
+---
+
+#
+# Configure logging server
+#
+- name: logserver -- create appscale logserver dir
+  file:
+    path: "{{ appscale_logserver_dir }}"
+    state: directory
+  tags: logserver
+
+# Note: This is a bit strange... we're laying down a file into the git repo?
+- name: logserver -- ensure configuration file
+  copy:
+    src: files/logging.capnp
+    dest: "{{ appscale_home_runtime }}/AppServer/google/appengine/api/logservice/logging.capnp"

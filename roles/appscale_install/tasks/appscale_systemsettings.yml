@@ -1,0 +1,100 @@
+---
+
+#
+# Setup Appscale environment and system settings
+#
+- name: appscale_system -- profile.d directory
+  file:
+    path: "{{ dest_dir }}/etc/profile.d"
+    state: directory
+  tags: appscale_system
+
+- name: appscale_system -- configure shell profile
+  template:
+    src: templates/appscale.sh.j2
+    dest: "{{ dest_dir }}/etc/profile.d/appscale.sh"
+  tags: appscale_system
+
+- name: appscale_system -- ensure python path directory
+  file:
+    path: "{{ dest_dir }}/usr/local/lib/python2.7/dist-packages"
+    state: directory
+  tags: appscale_system
+
+- name: appscale_system -- configure AppDB / AppServer python path
+  template:
+    src: templates/appscale_appserver.pth.j2
+    dest: "{{ dest_dir }}/usr/lib/python2.7/dist-packages/appscale_appserver.pth"
+  tags: appscale_system
+
+- name: appscale_system -- configure python site-packages
+  copy:
+    dest: "{{ dest_dir }}/usr/local/lib/python2.7/dist-packages/site_packages.pth"
+    content: "/usr/lib/python2.7/site-packages"
+  tags: appscale_system
+
+- name: appscale_system -- ensure config directory exists
+  file:
+    path: "{{ dest_dir }}/{{ config_dir }}"
+    state: directory
+  tags: appscale_system
+
+- name: appscale_system -- set /etc/appscale/home
+  copy:
+    dest: "{{ dest_dir }}/{{ config_dir }}/home"
+    content: "{{ appscale_home_runtime }}"
+  tags: appscale_system
+
+- name: appscale_system -- determine proper JAVA_HOME variable if arch is x86_64
+  set_fact:
+    java_home_directory: "{{ java_home_directory_x86_64 }}"
+  when: ansible_architecture == "x86_64"
+  tags: appscale_system
+
+- name: appscale_system -- determine proper JAVA_HOME variable if arch is arm
+  set_fact:
+    java_home_directory: "{{ java_home_directory_arm }}"
+  when: ansible_architecture == "arm" or ansible_architecture == "arm64"
+  tags: appscale_system
+
+- name: appscale_system -- create environment.yml file
+  template:
+    src: templates/environment.yaml.j2
+    dest: "{{ dest_dir }}/{{ config_dir }}/environment.yaml"
+  tags: appscale_system
+
+- name: appscale_system -- ensure appscale logging directory exists
+  file:
+    path: /var/log/appscale
+    state: directory
+    group: adm
+    mode: g+rwx
+  tags: appscale_system
+
+- name: appscale_system -- ensure /var/appscale/version_assets exists
+  file:
+    path: /var/appscale/version_assets
+    state: directory
+  tags: appscale_system
+
+- name: appscale_system -- check if /etc/logrotate exists
+  stat:
+    path: /etc/logrotate.d/
+  register: logrotate
+  tags: appscale_system
+
+- name: appscale_system -- configure appscale-logrotate
+  copy:
+    src: files/appscale-logrotate.conf
+    dest: /etc/logrotate.d/appscale
+  when: logrotate.stat.exists
+  tags: appscale_system
+
+- name: appscale_system -- configure hourly logrotate
+  copy:
+    dest: /etc/cron.hourly/logrotate-hourly
+    content: |
+      #!/bin/sh
+      /usr/sbin/logrotate /etc/logrotate.d/appscale*
+    mode: +x
+  tags: appscale_system

@@ -1,0 +1,18 @@
+---
+
+
+- name: appscale -- datastore upgrade
+  pip:
+    name: "file://{{ appscale_home_runtime }}/AppDB"
+    extra_args: --upgrade --no-deps
+  become: yes
+  become_user: root
+  tags: appscale_datastore
+
+- name: appscale -- datastore
+  pip:
+    name: "file://{{ appscale_home_runtime }}/AppDB"
+  become: yes
+  become_user: root
+  tags: appscale_datastore
+

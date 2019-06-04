@@ -1,0 +1,13 @@
+---
+
+appscale_sysctl_config: "/etc/sysctl.d/10-appscale.conf"
+
+# List of settings to apply via the sysctl module in tasks/sysctlsettings.yml
+sysctl_settings:
+  - { name: net.netfilter.nf_conntrack_max, value: 262144 }
+  - { name: net.core.somaxconn, value: 20240}
+  - { name: net.ipv4.tcp_tw_reuse, value: 0}
+  - { name: net.ipv4.tcp_orphan_retries, value: 1}
+  - { name: net.ipv4.tcp_fin_timeout, value: 25}
+  - { name: net.ipv4.tcp_max_orphans, value: 8192}
+  - { name: net.ipv4.ip_local_port_range, value: "32768 61000"}

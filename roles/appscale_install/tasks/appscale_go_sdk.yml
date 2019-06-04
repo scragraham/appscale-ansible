@@ -1,0 +1,20 @@
+---
+#
+# Extraction of appscale go sdk
+#
+# Package should already be downloaded via main.yml - see 'download packages from appscale-build'
+- name: appscale go sdk -- ensure destination directory exists
+  file:
+    path: "{{ appscale_go_runtime_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 755
+  tags: appscale_go_sdk
+
+- name: appscale go sdk -- extract package to destination directory
+  unarchive:
+    src: "{{ package_cache }}/{{ appscale_go_runtime }}"
+    dest: "{{ appscale_go_runtime_dir }}"
+    remote_src: yes
+  tags: appscale_go_sdk

@@ -1,0 +1,16 @@
+---
+
+- name: appscale -- hermes upgrade
+  pip:
+    name: "file://{{ appscale_home_runtime}}/Hermes"
+    extra_args: --upgrade --no-deps
+  become: yes
+  become_user: root
+  tags: appscale_hermes
+
+- name: appscale -- hermes
+  pip:
+    name: "file://{{ appscale_home_runtime}}/Hermes"
+  become: yes
+  become_user: root
+  tags: appscale_hermes

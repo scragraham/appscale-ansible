@@ -1,0 +1,5 @@
+---
+
+# Default basedir for the jumpbox is /appscale/
+# can be defined elsewhere in a playbook or parameter to override the base directory
+base_dir: /appscale/

@@ -1,0 +1,22 @@
+---
+
+#
+# Ubuntu Xenial Specific Tasks
+#
+- name: Remove Conflicting Packages
+  apt:
+    name: "{{ conflicting_packages }}"
+    state: absent
+    update_cache: yes
+
+- name: Install Build Packages
+  apt:
+    name: "{{ build_packages }}"
+    state: present
+    update_cache: yes
+  
+- name: Install Packages
+  apt:
+   name: "{{ packages }}"
+   state: present
+   update_cache: yes

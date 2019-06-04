@@ -1,0 +1,11 @@
+---
+
+#
+# Memcached configuration
+#
+- name: memcached -- disable service appscale manages memcached
+  service:
+    name: memcached
+    state: stopped
+    enabled: no
+  tags: memcached

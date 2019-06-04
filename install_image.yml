@@ -1,0 +1,21 @@
+---
+
+#
+# Installer for AppScale Dependencies
+#
+# Image role: installs software via apt, etc and
+# readies the image for installation
+#
+- hosts: localhost
+  pre_tasks:
+    - name: Supported Platform Check
+      assert:
+        that: >
+          (ansible_distribution|lower == 'ubuntu'
+          and (ansible_distribution_release == 'xenial' or
+               ansible_distribution_release == 'trusty'))
+        fail_msg: "Can't Install on {{ ansible_distribution }} - {{ ansible_distribution_release }}"
+        success_msg: "Installing on: {{ ansible_distribution }} - {{ ansible_distribution_release }}"
+
+  roles:
+    - image

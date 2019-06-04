@@ -1,0 +1,77 @@
+---
+
+#
+# Configure rsyslog
+#
+- name: rsyslog -- configure appscale rsyslog config
+  copy:
+    src: files/rsyslog-template.conf
+    dest: "/etc/rsyslog.d/{{ appscale_rsyslog_conf }}"
+  tags: rsyslog
+
+# Old rsyslog versions
+# Use replace instead of lineinfile since these might not
+# exist and we don't want them if they don't
+- name: rsyslog -- old enable modload udp
+  replace:
+    path: /etc/rsyslog.conf
+    regexp: "#($ModLoad imudp.*)"
+    replace: '\1'
+  tags: rsyslog
+
+- name: rsyslog -- old - enable udpserverrun old
+  replace:
+    path: /etc/rsyslog.conf
+    regexp: "#($UDPServerRun.*)"
+    replace: '\1'
+  tags: rsyslog
+
+- name: rsyslog -- old - enable modload tcp
+  replace:
+    path: /etc/rsyslog.conf
+    regexp: "#($ModLoad imtcp.*)"
+    replace: '\1'
+  tags: rsyslog
+
+- name: rsyslog -- enable modload
+  replace:
+    path: /etc/rsyslog.conf
+    regexp: "#($InputTCPServerRun.*)"
+    replace: '\1'
+  tags: rsyslog
+
+
+# Newer versions of rsyslog
+- name: rsyslog -- udp module
+  replace:
+    path: /etc/rsyslog.conf
+    regexp: '#(module\(load="imudp".*\))'
+    replace: '\1'
+  tags: rsyslog
+
+- name: rsyslog -- udp input
+  replace:
+    path: /etc/rsyslog.conf
+    regexp: '#(input\(type="imudp".*\))'
+    replace: '\1'
+  tags: rsyslog
+
+- name: rsyslog -- tcp module
+  replace:
+    path: /etc/rsyslog.conf
+    regexp: '#(module\(load="imtcp".*\))'
+    replace: '\1'
+  tags: rsyslog
+
+- name: rsyslog -- tcp input
+  replace:
+    path: /etc/rsyslog.conf
+    regexp: '#(input\(type="imtcp".*\))'
+    replace: '\1'
+  tags: rsyslog
+
+- name: rsyslog -- restart service
+  service:
+    name: rsyslog
+    state: restarted
+  tags: rsyslog

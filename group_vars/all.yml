@@ -1,0 +1,15 @@
+---
+# Variables that are global to the group: 'all'
+# These are global to all roles
+
+#
+# Git repositories and branches.
+# These variables will need to be overridden by a build and most likely
+# passed to the playbook via environment variables.
+#
+appscale_repo_url: "https://github.com/appscale/appscale.git"
+appscale_repo_branch: master
+appscale_tools_repo_url: "https://github.com/appscale/appscale-tools.git"
+appscale_tools_repo_branch: master
+appscale_agents_repo_url: "https://github.com/appscale/appscale-agents.git"
+appscale_agents_repo_branch: master

@@ -1,0 +1,12 @@
+---
+
+#
+# Configure /etc/hosts file
+#
+- name: configure /etc/hosts file
+  blockinfile:
+    marker: "# {mark} AppScale MANAGED BLOCK"
+    path: /etc/hosts
+    block: |
+      127.0.1.1 {{ ansible_hostname }}
+  tags: hostsfile

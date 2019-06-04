@@ -1,0 +1,61 @@
+---
+
+#
+# Build and Install the AppScale APIServer
+#
+
+# TODO: ensure that protocol buffers were really built?
+- name: appscale_apiserver -- build protocol buffer files
+  shell: "cd {{ appscale_home_runtime }}/APIServer && protoc --python_out=./appscale/api_server *.proto"
+  tags: appscale_apiserver
+
+- name: appscale_apiserver -- ensure old virtualenv is removed before install
+  file:
+    path: "{{ appscale_apiserver_venv }}"
+    state: absent
+  tags: appscale_apiserver
+
+- name: appscale_apiserver -- install pip
+  pip:
+    name: pip
+    extra_args: --upgrade
+    virtualenv: "{{ appscale_apiserver_venv }}"
+  tags: appscale_apiserver
+
+- name: appscale_apiserver -- install tornado - trusty
+  pip:
+    name: tornado<5
+    virtualenv: "{{ appscale_apiserver_venv }}"
+  when: ansible_distribution_release|lower == 'trusty'
+  tags: appscale_apiserver
+
+- name: appscale_apiserver -- install tornado
+  pip:
+    name: tornado
+    virtualenv: "{{ appscale_apiserver_venv }}"
+  when: ansible_distribution_release|lower != 'trust'
+  tags: appscale_apiserver
+
+- name: appscale_apiserver -- appcontroller client
+  pip:
+    name: "file://{{ appscale_home_runtime }}/AppControllerClient"
+    virtualenv: "{{ appscale_apiserver_venv }}"
+  become: yes
+  become_user: root
+  tags: appscale_apiserver
+
+- name: appscale_apiserver -- appscale common
+  pip:
+    name: "file://{{ appscale_home_runtime }}/common"
+    virtualenv: "{{ appscale_apiserver_venv }}"
+  become: yes
+  become_user: root
+  tags: appscale_apiserver
+
+- name: appscale_apiserver -- APIServer
+  pip:
+    name: "file://{{ appscale_home_runtime }}/APIServer"
+    virtualenv: "{{ appscale_apiserver_venv }}"
+  become: yes
+  become_user: root
+  tags: appscale_apiserver

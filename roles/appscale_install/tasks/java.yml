@@ -1,0 +1,43 @@
+---
+
+#
+# Variable definitions used in these tasks are located in defaults/main/extra_packages.yml
+#
+- name: External java client jars directory exists
+  file:
+    path: "{{ appscale_external_jar_dest }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 755
+  tags: java
+
+#
+# Copy files downloaded from 'Download packages from appscale-build'
+# remote_src: yes - Files are on the *host* not copied from the controller.
+#
+- name: Copy downloaded jars
+  copy:
+    src: "{{ package_cache }}/{{ item}}"
+    dest: "{{ appscale_external_jar_dest }}/{{item}}"
+    remote_src: yes
+  with_items: "{{ appscale_external_jars }}"
+  tags: java
+
+#
+# Set the java JDK
+#
+- name: set java jdk alternatives on x86_64
+  alternatives:
+    name: java
+    path: "{{ java_home_directory_x86_64 }}/jre/bin/java"
+  when: ansible_architecture == "x86_64"
+  tags: java
+
+# Not tested...
+- name: set java jdk alternatives on arm
+  alternatives:
+    name: java
+    path: "{{ java_home_directory_arm }}/jre/bin/java"
+  when: ansible_architecture == "arm" or ansible_architecture == "arm64"
+  tags: java

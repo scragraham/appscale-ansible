@@ -1,0 +1,44 @@
+---
+
+#
+# Monit configuration tasks
+#
+
+- name: monit -- see if we need to configure httpd port
+  shell: "grep -v '^#' /etc/monit/monitrc | grep http > /dev/null"
+  register: monit_http_configured
+  ignore_errors: yes
+  tags: monit
+
+- name: monit -- configure httpd port
+  blockinfile:
+    path: /etc/monit/monitrc
+    marker: "# {mark} AppScale MANAGED BLOCK"
+    block: |
+      set httpd port 2812 and
+         use address localhost  # only accept connection from localhost
+         allow localhost
+  when: monit_http_configured.rc == 1
+  tags: monit
+
+- name: monit -- configure daemon services
+  lineinfile:
+    path: /etc/monit/monitrc
+    regexp: "set daemon.*"
+    line: "set daemon 5"
+  tags: monit
+
+- name: monit -- enable cron monitoring
+  file:
+    src: /etc/monit/conf-available/cron
+    dest: /etc/monit/conf-enabled/cron
+    state: link
+  tags: monit
+
+
+- name: monit -- disable service startup
+  service:
+    name: monit
+    state: stopped
+    enabled: no
+  tags: monit

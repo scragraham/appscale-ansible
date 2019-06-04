@@ -1,0 +1,21 @@
+---
+
+#
+# Solr installation
+#
+- name: solr -- ensure destination directory
+  file:
+    name: "{{ solr_dir }}"
+    state: directory
+  tags: solr
+
+- name: solr -- extract binaries
+  unarchive:
+    src: "{{ package_cache }}/{{ solr_package }}"
+    dest: "{{ solr_dir }}/solr"
+    remote_src: yes
+  tags: solr
+
+#- name: solr -- move extracted dir to final location
+#  command: mv -v "{{ solr_dir }}/solr-{{ solr_ver }}" "{{ solr_dir }}/solr"
+#  tags: solr

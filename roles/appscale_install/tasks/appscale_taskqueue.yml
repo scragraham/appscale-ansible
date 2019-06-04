@@ -1,0 +1,19 @@
+---
+#
+# Install AppScale Taskqueue
+#
+
+# These use the shell module since pip doesn't seem to like the extras_require at the end of
+# the file url...
+- name: appscale -- taskqueue upgrade
+  shell: "pip install --upgrade --no-deps {{ appscale_home_runtime }}/AppTaskQueue[celery_ui]"
+  become: yes
+  become_user: root
+  tags: appscale_taskqueue
+
+- name: appscale -- taskqueue
+  shell: "pip install --upgrade --no-deps {{ appscale_home_runtime }}/AppTaskQueue[celery_ui]"
+  become: yes
+  become_user: root
+  tags: appscale_taskqueue
+

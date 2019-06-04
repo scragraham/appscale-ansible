@@ -1,0 +1,9 @@
+---
+#
+# Vagrant variables
+#
+vagrant_user: 'vagrant'
+
+# password is 'vagrant'
+# hashed with: mkpasswd --method=sha-512
+vagrant_password: '$6$wkm47Wy41N7SK$EUJxwrRqtd6xGSr48C/FPGIUpBVQZTPljrFH53wDIMvvS3Qrua2VAqVOAGXo0uu.pyH3PG.zDoo4v6LZo95Dt.'

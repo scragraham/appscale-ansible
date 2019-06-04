@@ -1,0 +1,74 @@
+---
+
+#
+#
+# Install Cassandra
+# tasks to install cassandra from a tar.gz file
+#
+# assumes that tasks/main.yml has downloaded the packages already.
+#
+#
+- name: cassanrda -- remove old cassandra env
+  file:
+    path: "{{ appscale_home }}/AppDB/cassandra"
+    state: absent
+  tags: cassandra
+
+- name: ensure cassandra user exists
+  user:
+    name: cassandra
+    comment: "Cassandra"
+  tags: cassandra
+
+- name: create new cassandra env
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: cassandra
+    recurse: yes
+  with_items:
+    - "{{ cassandra_dir }}"
+    - "{{ cassandra_data_dir }}"
+  tags: cassandra
+
+- name: make sure possible old directory is gone
+  file:
+    path: "{{ cassandra_dir }}/cassandra"
+    state: absent
+  tags: cassandra
+
+# TODO the filename needs to be parameterized
+- name: extract cassandra binaries
+  unarchive:
+    # This should be a parameter- the cassandra filename that is..
+    src: "{{ package_cache }}/{{ cassandra_full_version }}"
+    dest: "{{ cassandra_dir }}"
+    remote_src: yes
+  tags: cassandra
+
+- name: move cassandra directory to final destination
+  command: mv -v "{{ cassandra_dir }}/{{ cassandra_version }}" "{{ cassandra_dir }}/cassandra"
+  tags: cassandra
+
+- name: Chown directories to cassandra user
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: cassandra
+    recurse: yes
+  with_items:
+    - "{{ cassandra_dir }}"
+    - "{{ cassandra_data_dir }}"
+  tags: cassandra
+
+#
+# Post install,create config file.
+#
+- name: cassandra config file
+  file:
+    path: "{{ appscale_config_dir }}/{{ appscale_version }}/cassandra"
+    state: touch
+    owner: root
+    group: root
+    mode: 755
+  tags: cassandra

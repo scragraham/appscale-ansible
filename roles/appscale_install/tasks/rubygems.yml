@@ -1,0 +1,84 @@
+---
+
+#
+# Install Ruby gems
+#
+
+#
+# Ruby
+#
+# We install specific versions of gems if ruby is old
+# Which might be tricky...if ruby is old maybe ansible
+# is too old too? version() used to be version_compare() in old
+# ansible versions
+#
+- name: Ruby - get installed version
+  shell: "ruby --version | awk '{print $2}'"
+  register: ruby_installed_version
+
+- name: ruby install zookeeper x86_64
+  gem:
+    name: zookeeper
+    state: present
+  when: ansible_architecture == "x86_64"
+
+- name: ruby nstall zookeeper non x86
+  gem:
+    name: zookeeper
+    gem_source: "{{ package_cache }}/{{ zookeeper_gem }}"
+
+- name: ruby install specific version of rake if ruby is old
+  gem:
+    name: rake
+    build_flags: "{{ gem_options }}"
+    version: 12.2.1
+  when: ruby_installed_version is version('2.0.0', '<')
+
+- name: ruby install rake if ruby > 2.0
+  gem:
+    name: rake
+    build_flags: "{{ gem_options }}"
+    state: latest
+
+- name: ruby install specific version of json if ruby is old
+  gem:
+    name: json
+    build_flags: "{{ gem_options }}"
+    version: 1.8.3
+  when: ruby_installed_version is version('2.0.0', '<')
+
+- name: ruby install json if ruby > 2.0
+  gem:
+    name: json
+    build_flags: "{{ gem_options }}"
+    state: latest
+
+- name: ruby install Soapr4-ng
+  gem:
+    name: soap4r-ng
+    build_flags: "{{ gem_options }}"
+    version: 2.0.3
+
+- name: ruby install httparty
+  gem:
+    name: httparty
+    build_flags: "{{ gem_options }}"
+    version: 0.14.0
+
+- name: ruby install httpclient
+  gem:
+    name: httpclient
+    state: latest
+    build_flags: "{{ gem_options }}"
+
+- name: ruby install posixpsutil
+  gem:
+    name: posixpsutil
+    state: latest
+    build_flags: "{{ gem_options }}"
+
+- name: ruby install simplecov
+  gem:
+    name: simplecov
+    state: latest
+    build_flags: "{{ gem_options }}"

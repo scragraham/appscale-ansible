@@ -1,0 +1,33 @@
+---
+
+#
+# Installation of python packages in the system python
+#
+
+# Install specific version of pip for trust/jessie
+- name: install specific version of pip - trusty
+  pip:
+    name: pip<10
+  when: ansible_distribution_release|lower == 'trusty'
+  tags: pipinstalls
+
+- name: install specific version of pip - jessie
+  pip:
+    name: pip<10.0.0b1
+  when: ansible_distribution_release|lower == 'jessie'
+  tags: pipinstalls
+
+# Sometimes pip can fail due to connection issues, retry up to 5 times.
+# TODO: follow up on this task, it seems to work as a vagrant provisioner
+# but was failing when I ran it by hand.
+#
+- name: install pip packages
+  pip:
+    name: "{{ pip_packages }}"
+  register: result
+  become: yes
+  become_user: root
+  tags: pipinstalls
+#  retries: 5
+#  delay: 2
+#  until: result is succeeded

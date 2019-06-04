@@ -1,0 +1,29 @@
+---
+
+#
+# Nginx specific configuration tasks
+#
+- name: remove default sites-enabled
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  tags: nginx
+
+- name: nginx service config directory
+  file:
+    path: /etc/systemd/system/nginx.service.d
+    state: directory
+  tags: nginx
+
+- name: nginx override.conf
+  copy:
+    dest: /etc/systemd/system/nginx.service.d/override.conf
+    content: |
+      [Service]
+      LimitNOFILE=200000
+  tags: nginx
+
+- name: nginx reload systemd daemon
+  systemd:
+    daemon_reload: yes
+  tags: nginx

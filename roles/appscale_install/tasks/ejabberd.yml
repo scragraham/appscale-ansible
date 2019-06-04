@@ -1,0 +1,30 @@
+---
+
+- name: ejabberd -- ensure ejabberd_auth.py
+  copy:
+    src: files/ejabberd_auth.py
+    dest: /etc/ejabberd/ejabberd_auth.py
+    mode: "+x"
+    owner: ejabberd
+    group: ejabberd
+  tags: ejabberd
+
+- name: ejabberd -- register apparmor status
+  shell: "apparmor_status | grep ejabber -q"
+  register: ejabber_apparmor
+  tags: ejabberd
+
+- name: ejabberd -- disable apparmor profile
+  file:
+    state: link
+    path: /etc/apparmor.d/disable/usr.sbin.ejabberdctl
+    src: /etc/apparmor.d/usr.sbin.ejabberdctl
+  when: ejabber_apparmor.rc == 0
+  tags: ejabberd
+
+- name: ejabberd -- disable service
+  service:
+    name: ejabberd
+    state: stopped
+    enabled: no
+  tags: ejabberd

@@ -1,0 +1,29 @@
+---
+#
+# RabbitMQ tasks
+#
+
+- name: rabbitmq -- xenial config
+  lineinfile:
+    path: /etc/rabbitmq/rabbitmq.config
+    line: "[{rabbit, [{loopback_users, []}]}]."
+    state: present
+    create: yes
+  when: ansible_distribution_release|lower == 'xenial'
+  tags: rabbitmq
+
+- name: rabbitmq -- enable management api
+  lineinfile:
+    path: /etc/rabbitmq/enabled_plugins
+    line: "[rabbitmq_management]."
+    state: present
+    create: yes
+  tags: rabbitmq
+
+# TODO: original had rabbitmqctl stop, not systemctl stop rabbitmq-server... verify this is valid
+- name: rabbitmq -- stop, disable service
+  service:
+    name: rabbitmq-server
+    state: stopped
+    enabled: no
+  tags: rabbitmq

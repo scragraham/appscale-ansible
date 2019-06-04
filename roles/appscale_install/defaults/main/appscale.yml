@@ -1,0 +1,41 @@
+---
+# perhaps base_dir should be something like: root_homedir to be more explicit in
+# the playbooks.
+base_dir: /root/
+config_dir: /etc/appscale
+
+# Home runtime is where the git repo is located
+appscale_home_runtime: "{{ base_dir }}/appscale"
+
+# Should always probably be /
+dest_dir: /
+
+#
+# Default variables used for appscale_install
+#
+appscale_build_url: http://s3.amazonaws.com/appscale-build
+appscale_home: /opt/appscale
+appscale_config_dir: /etc/appscale/
+appscale_version: 3.7.0
+
+#
+# Git repositories and branches.
+# These variables will need to be overriden by a build and most likely
+# passed to the playbook via environment variables.
+#
+appscale_repo_url: "https://github.com/appscale/appscale.git"
+appscale_repo_branch: master
+appscale_tools_repo_url: "https://github.com/appscale/appscale-tools.git"
+appscale_tools_repo_branch: master
+appscale_agents_repo_url: "https://github.com/appscale/appscale-agents.git"
+appscale_agents_repo_branch: master
+
+#
+# AppScale component specific variables
+#
+appscale_apiserver_venv: /opt/appscale_api_server
+
+#
+# Java AppServer
+#
+appscale_appserver_java_sdk: "{{ appscale_home_runtime }}/AppServer_Java"

@@ -1,0 +1,33 @@
+---
+
+#
+# Install AppController
+#
+
+- name: appscale_appcontroller -- ensure /etc/init.d
+  file:
+    path: "{{ dest_dir }}/etc/init.d/"
+    state: directory
+  tags: appscale_appcontroller
+
+- name: appscale_appcontroller -- create appscale-appcontroller
+  copy:
+    src: files/appcontroller
+    dest: "{{ dest_dir }}/etc/init.d/appscale-controller"
+    mode: a+x
+  tags: appscale_appcontroller
+
+- name: appscale_appcontroller -- update-rc.d appscale-controller
+  shell: "update-rc.d -f appscale-controller defaults"
+  tags: appscale_appcontroller
+
+- name: appscale_appcontroller -- unmonit script
+  copy:
+    src: files/appscale-unmonit.sh
+    dest: /etc/init.d/appscale-unmonit
+    mode: a+x
+  tags: appscale_appcontroller
+
+- name: appscale_appcontroller -- update-rc.d unmonit
+  shell: "update-rc.d appscale-unmonit defaults 19 21"
+  tags: appscale_appcontroller

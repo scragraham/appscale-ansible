@@ -1,0 +1,21 @@
+---
+
+#
+# Post install setup for zookeeper.
+#
+# Installation of zookeeper is done via pipinstalls.yml
+#
+- name: zookeeper -- configure rollingfile MaxBackupIndex to 3
+  lineinfile:
+    path: /etc/zookeeper/conf/log4j.properties
+    regexp: '^[# ]*log4j.appender.ROLLINGFILE.MaxBackupIndex='
+    line: 'log4j.appender.ROLLINGFILE.MaxBackupIndex=3'
+  tags: zookeeper
+
+# AppScale starts/stops haproxy
+- name: zookeeper -- stop and disable service
+  service:
+    name: zookeeper
+    state: stopped
+    enabled: no
+  tags: zookeeper

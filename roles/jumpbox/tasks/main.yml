@@ -1,0 +1,36 @@
+---
+
+- name: Create directories needed for appscale
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0775
+  with_items: "{{ directories }}"
+
+- name: Install packages
+  apt:
+   name: "{{ item }}"
+   state: present
+   update_cache: yes
+  with_items: "{{ packages }}" 
+
+- name: Clone main appscale repo
+  git:
+    repo: 'https://github.com/appscale/appscale.git'
+    dest: "{{ base_dir }}/repos/appscale"
+    version: master
+
+- name: Clone appscale-tools repo
+  # Not sure this is needed...
+  git:
+    repo: 'https://github.com/appscale/appscale-tools.git'
+    dest: "{{ base_dir }}/repos/appscale-tools"     
+    version: master
+
+- name: Create virtual environments, install appscale-tools
+  pip:
+    name: git+https://github.com/appscale/appscale-tools#egg=appscale-tools
+    # should be parameterized string...
+    virtualenv: "{{ base_dir }}/venvs/appscale-tools"

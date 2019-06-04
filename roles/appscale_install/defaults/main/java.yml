@@ -1,0 +1,16 @@
+---
+
+#
+# Java specific variables
+#
+# Note *some* variables related to java exist in extra_packages.yml
+# the main reason is that they are associated with installing extra jars
+# *these* vars are for the JRE/JDK itself.
+#
+java_version: java-8-openjdk
+
+java_home_directory_x86_64: "/usr/lib/jvm/{{ java_version }}-amd64"
+java_home_directory_arm: "/usr/lib/jvm/{{ java_version }}-armhf"
+
+# Note: java_home_directory is used in appscale_systemsettings and is dynamically created in that playbook based
+#       on the architecture.

@@ -1,0 +1,26 @@
+---
+#
+# Haproxy setup and configuration
+#
+
+# TODO: No longer need appscale/AppDashboard/setup/haproxy.cfg
+- name: copy dashboard default config
+  copy:
+    src: 'files/haproxy.cfg'
+    dest: /etc/haproxy/haproxy.cfg
+  tags: haproxy
+
+- name: enable haproxy in configuration
+  lineinfile:
+    path: /etc/default/haproxy
+    regexp: '^ENABLED='
+    line: 'ENABLED=1'
+  tags: haproxy
+
+# AppScale starts/stops haproxy
+- name: stop and disable haproxy service
+  service:
+    name: haproxy
+    state: stopped
+    enabled: no
+  tags: haproxy

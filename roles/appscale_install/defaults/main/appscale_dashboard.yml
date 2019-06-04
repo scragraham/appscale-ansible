@@ -1,0 +1,6 @@
+---
+appscale_dashboard_pip_packages:
+  - wstools==0.4.3
+  - SOAPpy
+  - python-crontab
+  - "file://{{ appscale_home_runtime }}/AppControllerClient"

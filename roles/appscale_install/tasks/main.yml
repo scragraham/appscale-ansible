@@ -1,0 +1,195 @@
+---
+#
+# AppScale Installer
+#
+# This is the main driver for tasks for the appscale_install role.
+# It imports other tasks from this directory to perform installations
+# and configuration of services on the host.
+#
+- name: ensure package cache directory exists
+  file:
+    path: "{{ package_cache }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 755
+
+#
+# Download payloads if needed.
+# Retry 5 times, with 2 second delay.
+# If files exist on disk and checksums match files will not be re-downloaded.
+#
+- name: download packages from appscale-build
+  get_url:
+    url: "{{ appscale_build_url}}/{{ item.filename }}"
+    dest: "{{ package_cache }}/{{ item.filename }}"
+    checksum: "{{ item.checksum }}"
+  with_items: "{{ custom_files }}"
+  register: result
+  retries: 5
+  delay: 2
+  until: result is succeeded
+
+#
+# AppScale specific tasks
+#
+- name: appscale config directory
+  file:
+    path: "{{ appscale_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 755
+
+# Could remove previous tasks and this will create subdirs...
+- name: appscale config version directory
+  file:
+    path: "{{ appscale_config_dir }}/{{ appscale_version }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 755
+
+#
+# Clone git repositories
+#
+# Possible distro issue if we decide to use something other than ubuntu...
+- name: main - ensure git
+  apt:
+    name: git
+    state: present
+    update_cache: yes
+
+#
+# Git repositories needed.
+#
+- name: main - clone main appscale repo
+  git:
+    repo: "{{ appscale_repo_url }}"
+    dest: "{{ base_dir }}/appscale"
+    version: "{{ appscale_repo_branch }}"
+
+
+- name: main - clone appscale-tools repo
+  git:
+    repo: "{{ appscale_tools_repo_url }}"
+    dest: "{{ base_dir }}/appscale-tools"
+    version: "{{ appscale_tools_repo_branch }}"
+
+- name: main - clone appscale-agents repo
+  git:
+    repo: "{{ appscale_agents_repo_url }}"
+    dest: "{{ base_dir }}/appscale-agents"
+    version: "{{ appscale_agents_repo_branch }}"
+
+#
+# Installation of 3rd party applications/libraries
+#
+- name: java - installation
+  import_tasks: java.yml
+
+- name: cassandra - installation
+  import_tasks: cassandra.yml
+
+- name: ruby - gems installation
+  import_tasks: rubygems.yml
+
+- name: pip - install packages
+  import_tasks: pipinstalls.yml
+
+- name: solr - installation
+  import_tasks: solr.yml
+
+#
+# Configuration tasks
+#
+- name: ejabberd configuration
+  import_tasks: ejabberd.yml
+
+- name: memcached configuration
+  import_tasks: memcached.yml
+
+- name: rsyslog configuration
+  import_tasks: rsyslog.yml
+
+- name: hostsfile changes
+  import_tasks: etchosts.yml
+
+- name: appscale sysctl / limits settings
+  import_tasks: systemsettings.yml
+
+- name: nginx - post install
+  import_tasks: nginx.yml
+
+- name: haproxy - post install
+  import_tasks: haproxy.yml
+
+- name: zookeeper - post install tasks
+  import_tasks: zookeeper.yml
+
+- name: rabbitmq - post install tasks
+  import_tasks: rabbitmq.yml
+
+- name: monit - post install tasks
+  import_tasks: monit.yml
+
+#
+# AppScale Software Installation
+#
+- name: appscale -- version install
+  import_tasks: appscale_version.yml
+
+- name: appscale -- go sdk
+  import_tasks: appscale_go_sdk.yml
+
+- name: appscale -- appcontroller client
+  import_tasks: appscale_appcontroller_client.yml
+
+- name: appscale -- common
+  import_tasks: appscale_common.yml
+
+- name: appscale -- adminserver
+  import_tasks: appscale_adminserver.yml
+
+- name: appscale -- hermes
+  import_tasks: appscale_hermes.yml
+
+- name: appscale -- infrastructure manager
+  import_tasks: appscale_infrastructure.yml
+
+- name: appscale -- taskqueue
+  import_tasks: appscale_taskqueue.yml
+
+- name: appscale -- datastore
+  import_tasks: appscale_datastore.yml
+
+- name: appscale -- apiserver
+  import_tasks: appscale_apiserver.yml
+
+- name: appscale -- appserver java
+  import_tasks: appscale_appserver_java.yml
+
+- name: appscale -- appscale system settings
+  import_tasks: appscale_systemsettings.yml
+
+# Verify that its ok to install appcontroller here and doesn't need a specific order
+- name: appscale -- appcontroller
+  import_tasks: appscale_appcontroller.yml
+
+- name: appscale -- apiserver
+  import_tasks: appscale_apiserver.yml
+
+- name: appscale -- dashboard prep
+  import_tasks: appscale_dashboard.yml
+
+#
+# Traditionally this is the last thing done
+# for appscale install
+#
+- name: ensure certificates directory exists
+  file:
+    path: "{{ config_dir }}/certs"
+    state: directory
+    owner: root
+    group: root
+    mode: 0775

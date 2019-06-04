@@ -1,0 +1,52 @@
+---
+
+#
+# Build and Install the java appserver
+#
+- name: appscale_appserver_java -- clean build
+  shell: "cd {{ appscale_appserver_java_sdk }} && ant clean-all"
+  tags: appscale_appserver_java
+
+#
+# Note: We'll use the registered variable sdk_contents heavily after this task
+#
+- name: appscale_appserver_java -- extract java sdk
+  unarchive:
+    src: "{{ package_cache }}/{{ appengine_java_sdk }}"
+    dest: "{{ appscale_appserver_java_sdk }}"
+    remote_src: yes
+    list_files: yes
+  register: sdk_contents
+  tags: appscale_appserver_java
+
+
+# Writeup?
+- debug:
+    var: sdk_contents.files[0]
+  tags: appscale_appserver_java
+
+- name: appscale_appserver_java -- remove old jar file
+  file:
+    path: "{{ appscale_appserver_java_sdk }}/{{ sdk_contents.files[0] }}/lib/tools/jsp/{{ appengine_jar_to_remove }}"
+    state: absent
+  tags: appscale_appserver_java
+
+- name: appscale_appserver_java -- copy new jsp jar file
+  copy:
+    src: "{{ package_cache }}/{{ appengine_repackaged_eclipse }}"
+    dest: "{{ appscale_appserver_java_sdk }}/{{ sdk_contents.files[0] }}/lib/tools/jsp/{{ appengine_repackaged_eclipse }}"
+  tags: appscale_appserver_java
+
+- name: appscale_appserver_java -- compile appserver
+  shell: "cd {{ appscale_appserver_java_sdk }} && ant install && ant clean-build"
+  tags: appscale_appserver_java
+
+- name: appscale_appserver_java -- remove src/lib directories
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ appscale_appserver_java_sdk }}/src"
+    - "{{ appscale_appserver_java_sdk }}/lib"
+  when: dest_dir != "/"
+  tags: appscale_appserver_java

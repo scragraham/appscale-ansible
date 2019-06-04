@@ -1,0 +1,25 @@
+---
+#
+# Top level image tasks, should be minimal and will import the role based on the distribution.
+#
+# roles are named:
+# image_{distribution}_{release} and files are image_distribution_release.yml
+# there will be some duplication of tasks, but I think it should be fine in order to have them
+# distinctly defined.
+# example: image_ubuntu_xenial.yml
+#
+
+#TODO - Add apt-get lock detection pre_task
+
+
+#
+# Distribution specific tasks.
+#
+- name: Ubuntu Xenial specific tasks
+  import_role:
+    name: image_ubuntu_xenial
+  when:
+    - ansible_distribution|lower == 'ubuntu'
+    - ansible_distribution_release|lower == 'xenial'
+  tags:
+    - xenial

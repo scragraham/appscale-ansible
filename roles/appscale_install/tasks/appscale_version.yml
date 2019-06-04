@@ -1,0 +1,12 @@
+---
+#
+# Laydown the appscale VERSION File
+#
+
+- name: appscale -- VERSION
+  copy:
+    src: "{{ base_dir }}/appscale/VERSION"
+    dest: "{{ appscale_config_dir }}/VERSION"
+    remote_src: yes
+    backup: yes
+  tags: appscale_version

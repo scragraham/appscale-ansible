@@ -1,0 +1,45 @@
+---
+
+#
+# Adjust sysctl configurations
+# network adjustments
+#
+
+- name: enable ip_conntrack
+  lineinfile:
+    path: /etc/modules
+    line: "ip_conntrack"
+    state: present
+  tags: sysctl
+
+#
+# TODO: This command can fail on google cloud, ignore_errors should be tied to
+# only google cloud instances
+# TODO: is this nf_conntrack now?
+- name: modprobe ip_conntrack
+  modprobe:
+    name: ip_conntrack
+    state: present
+  ignore_errors: yes
+  when: ansible_distribution_release|lower == 'xenial'
+  tags: sysctl
+
+- name: sysctl settings
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    sysctl_file: "{{ appscale_sysctl_config }}"
+    reload: yes
+  with_items: "{{ sysctl_settings }}"
+  tags: sysctl
+
+- name: set /etc/security/limits.conf
+  copy:
+    dest: /etc/security/limits.conf
+    content: |
+      root            hard    nofile           200000
+      root            soft    nofile           200000
+      *               hard    nofile           200000
+      *               soft    nofile           200000
+      *               -       nproc            32768
+  tags: sysctl

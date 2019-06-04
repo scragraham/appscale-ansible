@@ -1,0 +1,5 @@
+---
+#
+# Variables for rsyslog
+#
+appscale_rsyslog_conf: 09-appscale.conf

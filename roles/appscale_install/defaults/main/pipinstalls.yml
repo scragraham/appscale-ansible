@@ -1,0 +1,14 @@
+---
+#
+# Variables for pip installs
+#
+
+# TODO: Verify order of installation...
+pip_packages:
+  - tornado==4.2.0
+  - pycrypto
+  - pycapnp
+  - PyYAML
+  - SOAPpy==0.12.22
+  - kazoo==2.4.0
+  - google-api-python-client==1.5.4 # not sure order

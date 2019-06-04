@@ -1,0 +1,24 @@
+---
+
+- name: appscale -- dashboard vendor dir
+  file:
+    path: "{{ appscale_home_runtime }}/AppDashboard/vendor"
+    state: absent
+  tags: appscale_dashboard
+
+#
+# Prepare appscale dashboard pip environment
+# The appcontroller actually deploys the dashboard app
+#
+- name: appscale -- dashboard pip install
+  pip:
+    name: "{{ appscale_dashboard_pip_packages }}"
+    virtualenv: "{{ appscale_home_runtime }}/AppDashboard/vendor"
+  register: result
+  become: yes
+  become_user: root
+  tags: appscale_dashboard
+
+#  retries: 5
+#  delay: 2
+#  until: result is succeeded

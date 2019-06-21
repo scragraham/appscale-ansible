@@ -5,7 +5,7 @@
 #
 - name: solr -- ensure destination directory
   file:
-    name: "{{ solr_dir }}"
+    name: "{{ solr_dir }}/solr"
     state: directory
   tags: solr
 
